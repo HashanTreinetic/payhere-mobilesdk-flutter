@@ -306,6 +306,13 @@ public class PayhereMobilesdkFlutterPlugin implements FlutterPlugin, MethodCallH
         this.log(msg);
       }
       else if (resultCode == Activity.RESULT_CANCELED) {
+          // Dismiss the payment screen
+
+      this.lastResult.success = false;
+      this.lastResult.data = null;
+      this.lastResult.callbackType = ResultCallbackType.dismiss;
+      this.lastResult.send();
+
         handled = true;
         if (response != null) {
           switch(response.getStatus()){
@@ -381,6 +388,21 @@ public class PayhereMobilesdkFlutterPlugin implements FlutterPlugin, MethodCallH
   public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
     attachedActivity = binding.getActivity();
     binding.addActivityResultListener(this);
+
+      // Get the activity
+      activity = activityPluginBinding.getActivity();
+
+      // Add a listener to the onBackPressed event
+      activity.onBackPressedDispatcher.addCallback(this, new OnBackPressedCallback() {
+        @Override
+        public void onBackPressed() {
+          // Dismiss the payment screen
+          this.lastResult.success = false;
+          this.lastResult.data = null;
+          this.lastResult.callbackType = ResultCallbackType.dismiss;
+          this.lastResult.send();
+        }
+      });
   }
 
   @Override
